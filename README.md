@@ -23,7 +23,7 @@ pip install -r requirements.txt
 Após isso, escreva o seguinte comando para rodar o site:
 
 ```bash
-python3 app.py
+python app.py
 ```
 
 E pronto, o site abrirá no seu navegador.
