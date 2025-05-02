@@ -1,0 +1,336 @@
+/* Estilo base do site */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #121212;
+  color: white;
+  overflow: hidden;
+}
+
+/* Transições de fadeIn e fadeOut para alguns botões */
+.fade-in {
+  animation: fadeIn 0.6s ease forwards;
+}
+.fade-out {
+  animation: fadeOut 0.4s ease forwards;
+}
+@keyframes fadeInMessage {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Botão do menu lateral (3 tracinhos) */
+.menu-toggle {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 28px;
+  cursor: pointer;
+  z-index: 100;
+  color: white;
+}
+
+/* Menu lateral */
+.side-menu {
+  position: fixed;
+  top: 0;
+  left: -220px;
+  width: 200px;
+  height: 100%;
+  background-color: #1a1a1a; /* ligeiramente mais escuro que #121212 */
+  padding-top: 60px;
+  transition: left 0.3s ease;
+  z-index: 99;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+}
+
+.side-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.side-menu li {
+  padding: 15px 20px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.side-menu li:hover {
+  background-color: #333;
+}
+
+/* Modal ao clicar em uma opção no menu lateral */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  z-index: 101;
+}
+
+/* Caixa do modal */
+.modal-box {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #1f1f1f;
+  color: white;
+  padding: 30px;
+  border-radius: 10px;
+  max-width: 90%;
+  width: 600px;
+  box-shadow: 0 0 10px black;
+  display: none;
+  z-index: 102;
+  text-align: center;
+}
+
+/* Botão de fechar */
+.close-btn {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Imagem principal da tela inicial */
+.start-screen img {
+  width: 50%;
+  max-width: 500px;
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+/* Título ChatFURIOSO */
+.start-screen h1 {
+  font-size: 60px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-family: 'Orbitron', sans-serif;
+}
+
+/* Logo da furia na tela inicial */
+.logo-furia {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 250px;
+  height: auto;
+  z-index: 1;
+}
+
+/* Título inicial + imagem CS */
+.title-with-image {
+  display: flex;
+  align-items: center;
+  gap: 20px; 
+  justify-content: center;
+}
+
+/* Imagem do CS ao lado do título */
+.title-with-image img {
+  height: 76px; 
+  width: auto;
+  position: relative;
+  top: -13px;
+}
+
+/* Tela inicial */
+.start-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  height: 100vh;
+  padding: 20px;
+  background-color: #121212;
+  position: relative;
+  width: 100%;
+  justify-content: center;
+}
+
+/* Botão de iniciar a conversa*/
+.start-screen button {
+  background-color: #ffffff;
+  color: #000000;
+  border: none;
+  padding: 15px 30px;
+  font-size: 18px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 0.3s, background-color 0.3s;
+  margin-top: 10px;
+}
+
+.start-screen button:hover {
+  background-color: #e6e6e6;
+  transform: scale(1.05);
+}
+
+/* Estrutura principal do chat*/
+#chatbox {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;
+  width: 100%;
+  z-index: 2;
+  padding: 0 20px 20px 20px;
+  box-sizing: border-box;
+}
+
+/* Campo das mensagens*/
+.messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  margin-top: 20px;
+  width: 100%;
+  max-width: 600px;
+  align-self: center;
+  display: flex;
+  flex-direction: column; 
+  gap: 10px; 
+}
+
+/* Campo onde é digitado a mensagem que deseja ser enviada + botão de envio*/
+.input-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 600px;
+  align-self: center;
+  margin-top: 10px;
+}
+
+/* Botão "?" para abrir o menu de sugestões */
+.help-menu-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.help-button {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background-color: #2a2a2a;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* Menu de sugestões */
+.suggestion-popup {
+  position: absolute;
+  bottom: 40px;
+  left: 0;
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background-color: #1a1a1a;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  z-index: 10;
+}
+
+.suggestion-popup button {
+  background-color: #2a2a2a;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.suggestion-popup button:hover {
+  background-color: #3a3a3a;
+}
+
+/* Input do usuário */
+#userInput {
+  flex: 1;
+  padding: 10px;
+  border-radius: 25px;
+  border: none;
+  background-color: #2a2a2a;
+  color: white;
+}
+
+#userInput::placeholder {
+  color: #ccc;
+}
+
+/* Botão de enviar (seta redonda) */
+.send-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background-color: white;
+  color: black;
+  font-size: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.send-button:hover {
+  background-color: #ddd;
+  transform: scale(1.1);
+}
+
+/* Estilo das mensagens gerais*/
+.message {
+  margin: 5px 0;
+  word-wrap: break-word;
+  padding: 10px;
+  max-width: 70%; 
+  display: inline-block;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+}
+
+/* Estilo para as mensagens do usuário */
+.user {
+  text-align: right;
+  background-color: #2a2a2a; 
+  color: white;
+  align-self: flex-end; 
+  border-radius: 20px; 
+}
+
+/* Estilo para as mensagens do bot */
+.bot {
+  text-align: left;
+  color: white;
+  align-self: flex-start; 
+  background-color: transparent; 
+  border-radius: 0px; 
+  padding: 10px 15px; 
+}

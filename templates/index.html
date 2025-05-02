@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <!-- Head do site -->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat FURIOSO CS</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Menu lateral dos três risquinhos -->
+<div class="menu-toggle" onclick="toggleMenu()">☰</div>
+<div class="side-menu" id="sideMenu">
+  <ul>
+    <li onclick="showInfo('ajuda')">Ajuda</li>
+    <li onclick="showInfo('objetivo')">Objetivo</li>
+    <li onclick="showInfo('sobre')">Quem sou eu?</li>
+  </ul>
+</div>
+
+  <!-- Tela inicial do site -->
+  <div class="start-screen" id="startScreen">
+    <img class="logo-furia" src="{{ url_for('static', filename='furialogo.png') }}" alt="Logo Chat Furioso">
+    <div class="title-with-image">
+      <h1>Chat FURIOSO</h1>
+      <img src="{{ url_for('static', filename='cs-2-logo.png') }}" alt="CS2 Logo">
+    </div>
+    <button onclick="startChat()">Iniciar Conversa</button>
+  </div>
+
+  <!-- Parte principal ChatBot -->
+  <div id="chatbox">
+    <div class="messages" id="messages"></div>
+
+    <div class="input-container">
+      <div class="help-menu-wrapper">
+        <button class="help-button" onclick="toggleSuggestions()">?</button>
+        <div class="suggestion-popup" id="suggestionPopup">
+          <button onclick="setSuggestedMessage('olá')">Olá</button>
+          <button onclick="setSuggestedMessage('curiosidades')">Curiosidades</button>
+          <button onclick="setSuggestedMessage('lineup')">Lineup Masculina</button>
+          <button onclick="setSuggestedMessage('lineup fem')">Lineup Feminina</button>
+          <button onclick="setSuggestedMessage('saiba mais players')">Players</button>
+          <button onclick="setSuggestedMessage('proximo jogo')">Próximo Jogo</button>
+          <button onclick="setSuggestedMessage('uniforme')">Uniforme</button>
+          <button onclick="setSuggestedMessage('outros jogos')">Outros Jogos</button>
+        </div>
+      </div>
+    
+      <input type="text" id="userInput" placeholder="Digite sua mensagem..." />
+      <button class="send-button" onclick="sendMessage()">⬆</button>
+    </div>
+  </div>
+
+  <!-- Modal com as informações do menu lateral -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
+<div class="modal-box" id="modalBox">
+  <span class="close-btn" onclick="closeModal()">×</span>
+  <div id="modalContent"></div>
+</div>
+
+  <script>
+    // Muda da tela inicial para o chat
+    function startChat() {
+      document.getElementById("startScreen").style.display = "none";
+      document.getElementById("chatbox").style.display = "flex";
+      appendMessage("Eae furioso! Bem-vindo ao ChatFURIOSO CS, feito para os fãs da FURIA no CS2, aproveite! GLHF😎", "bot");
+    }
+
+    // Enviar mensagem
+    function sendMessage() {
+      const userMessage = document.getElementById("userInput").value;
+      if (userMessage.trim() === "") return;
+
+      appendMessage(userMessage, "user");
+
+      fetch('/send_message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'user_message=' + encodeURIComponent(userMessage)
+      })
+      .then(response => response.json())
+      .then(data => {
+        appendMessage(data.response, "bot");
+      });
+
+      document.getElementById("userInput").value = "";
+    }
+
+    // Coloca a mensagem no chat
+    function appendMessage(message, sender) {
+      const messageDiv = document.createElement("div");
+      messageDiv.classList.add("message", sender);
+
+      // Se for mensagem do bot, substitui os placeholders por imagens
+      if (sender === "bot") {
+        message = message
+          .replace(/\[flag_br\]/g, "<img src='/static/flags/br.png' width='20' style='vertical-align:middle'>")
+          .replace(/\[flag_kz\]/g, "<img src='/static/flags/kz.png' width='20' style='vertical-align:middle'>")
+          .replace(/\[flag_lv\]/g, "<img src='/static/flags/lv.png' width='20' style='vertical-align:middle'>")
+          .replace(/\[flag_ag\]/g, "<img src='/static/flags/ag.png' width='20' style='vertical-align:middle'>");
+      }
+      messageDiv.innerHTML = message;
+      document.getElementById("messages").appendChild(messageDiv);
+      document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+    }
+    
+    // Menu lateral de sugestões
+    function toggleMenu() {
+      const menu = document.getElementById("sideMenu");
+      menu.style.left = menu.style.left === "0px" ? "-220px" : "0px";
+    }
+
+    // Mostra as informações ao clicar em uma opção do menu lateral
+    function showInfo(type) {
+      let content = "";
+      if (type === "ajuda") {
+        content = `Pra encontrar os comandos que nosso chat pode fazer, só clicar no "?" do lado de onde você digita, é facinho!
+        Aqui no menu ao lado você também encontra algumas curiosidades como o objetivo por trás desse chat, e mais sobre mim! Vem aproveitar ao máximo o ChatFURIOSO CS!😎`;
+      } else if (type === "objetivo") {
+        content = "Este chat foi criado para fornecer informações sobre o time de CS da FURIA para os fãs FURIOSOS! Curiosidades, players, informações de jogos, aproveita o máximo em?";
+      } else if (type === "sobre") {
+        content = "Meu nome é Enzo, apaixonado por tecnologia e mais ainda pelo time da FURIA! Esse chatbot é feito de fã para fã, faça um bom proveito!";
+      }
+      openModal(content);
+      toggleMenu();
+    }
+
+    // Abre e fecha o modal
+    function openModal(content) {
+      document.getElementById("modalContent").innerText = content;
+      document.getElementById("modalOverlay").style.display = "block";
+      document.getElementById("modalBox").style.display = "block";
+    }
+
+    function closeModal() {
+      document.getElementById("modalOverlay").style.display = "none";
+      document.getElementById("modalBox").style.display = "none";
+    }
+
+    // Quando pressionar Enter no campo de input, envia a mensagem
+    document.getElementById("userInput").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        sendMessage();
+      }
+    });
+
+    function toggleSuggestions() {
+      const popup = document.getElementById("suggestionPopup");
+      popup.style.display = popup.style.display === "flex" ? "none" : "flex";
+    }
+
+    function setSuggestedMessage(text) {
+      document.getElementById("userInput").value = text;
+      sendMessage();
+    }
+
+    function carregarPartidas() {
+      fetch('/api/next-matches')
+        .then(res => res.json())
+        .then(matches => {
+          const lista = document.getElementById('lista-jogos');
+          lista.innerHTML = '';
+          matches.forEach(match => {
+            const item = document.createElement('li');
+            item.textContent = `${match.team1} vs ${match.team2} - ${match.time} (${match.event})`;
+            lista.appendChild(item);
+          });
+      });
+    }
+
+  </script>
+
+</body>
+</html>
