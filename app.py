@@ -12,7 +12,8 @@ def remover_acentos(texto):
 # Lógica do bot em Python (com respostas predefinidas)
 def bot_response(user_message):
     # Respostas possíveis para diferentes cumprimentos
-    greetings = ["olá", "oi", "eae", "opa"]
+    greetings = ["ola", "oi", "eae", "opa"]
+    gratidões = ["valeu", "vlw", "obrigado", "obg"]
     curiosidades = [
         """A FURIA é a única equipe brasileira que participou de todos os Majors desde 2019. É o time do Brasil! [flag_br] """,
         """A melhor campanha da equipe até hoje em Majors foi a chegada às semifinais do IEM Rio Major 2022, com a vitória histórica 
@@ -37,14 +38,40 @@ def bot_response(user_message):
     ]
     # Remover acentos da mensagem do usuário para comparações sem acento
     message = remover_acentos(user_message.lower())
-
+    if "fallen" in message and message.strip() != "fallen":
+        return """Você quer saber sobre o FalleN? Se sim, digite apenas "FalleN". Se quiser saber sobre toda a lineup, digite "lineup" """
+    if "kscerato" in message and message.strip() != "kscerato":
+        return """Você quer saber sobre o KSCERATO? Se sim, digite apenas "KSCERATO". Se quiser saber sobre toda a lineup, digite "lineup" """
+    if "yuurih" in message and message.strip() != "yuurih":
+        return """Você quer saber sobre o yuurih? Se sim, digite apenas "yuurih". Se quiser saber sobre toda a lineup, digite "lineup" """
+    if "molodoy" in message and message.strip() != "molodoy":
+        return """Você quer saber sobre o molodoy? Se sim, digite apenas "molodoy". Se quiser saber sobre toda a lineup, digite "lineup" """
+    if "yekindar" in message and message.strip() != "yekindar":
+        return """Você quer saber sobre o YEKINDAR? Se sim, digite apenas "YEKINDAR". Se quiser saber sobre toda a lineup, digite "lineup" """
+    if "kaahsensei" in message and message.strip() != "kaahsensei":
+        return """Você quer saber sobre a kaahSENSEI? Se sim, digite apenas "kaahSENSEI". Se quiser saber sobre toda a lineup feminina, digite "lineup fem" """
+    if "gabs" in message and message.strip() != "gabs":
+        return """Você quer saber sobre a gabs? Se sim, digite apenas "gabs". Se quiser saber sobre toda a lineup feminina, digite "lineup fem" """
+    if "izaa" in message and message.strip() != "izaa":
+        return """Você quer saber sobre a izaa? Se sim, digite apenas "izaa". Se quiser saber sobre toda a lineup feminina, digite "lineup fem" """
+    if "lulitenz" in message and message.strip() != "lulitenz":
+        return """Você quer saber sobre a lulitenz? Se sim, digite apenas "lulitenz". Se quiser saber sobre toda a lineup feminina, digite "lineup fem" """
+    if "bizinha" in message and message.strip() != "bizinha":
+        return """Você quer saber sobre a bizinha? Se sim, digite apenas "bizinha". Se quiser saber sobre toda a lineup feminina, digite "lineup fem" """
+    if "proximo jogo" in message and message.strip() != "proximo jogo":
+        return """Você quer saber sobre o próximo jogo? Se sim, digite apenas "proximo jogo"."""
+    if "curiosidade" in message and message.strip() != "curiosidades":
+        return """Você quer saber curiosidades? Se sim, digite apenas "curiosidades"."""
+    if "uniforme" in message and message.strip() != "uniforme":
+        return """Você quer saber sobre a linha de moda da FURIA? Se sim, digite apenas "uniforme"."""
     # Resposta para cumprimentos
-    if any(remover_acentos(greeting) in message for greeting in greetings):
+    if any(greeting in message for greeting in greetings):
         return "Eae furioso! Bem-vindo ao ChatFURIOSO CS, feito para os fãs da FURIA no CS2, aproveite! GLHF😎"
+    if any(gratidõe in message for gratidõe in gratidões):
+        return "Não tem de que! Pode contar sempre com a gente!😎"
     # Respostas gerais
     responses = {
-        "proximo jogo": """O time da FURIA entrará em ação no campeonato PGL Astana 2025 que começará no dia 10 de maio. Contudo, 
-        ainda não tem data de jogos marcados 😔, mas fique atento para mais novidades!""",
+        "proximo jogo": """O time da FURIA entrará em ação no campeonato PGL Astana 2025 que começará no dia 10 de maio!""",
         "saiba mais players": """Quer saber mais dos nossos jogadores? Só escrever o nome do player (masculino ou feminino) que eu vou contar uns fatos daoras 
         sobre eles pra você! 😎""",
         "fallen": """O FalleN, ou carinhosamente chamado de Professor, é um dos maiores nomes do Counter-Strike mundial, bicampeão de Majors e referência no 
