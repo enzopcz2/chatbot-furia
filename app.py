@@ -1,9 +1,127 @@
 from flask import Flask, render_template, request, jsonify
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from bs4 import BeautifulSoup
+from datetime import datetime
 import re
 import unicodedata
 import random
+import time
+import json
 
 app = Flask(__name__)
+
+# Função para procurar os dados sobre jogos da FURIA na hltv
+def scraping_agenda():
+
+    # Configurar o Selenium
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
+    driver = webdriver.Chrome(options=options)
+
+    # URL do time da furia na hltv
+    url = "https://www.hltv.org/team/8297/furia#tab-matchesBox"
+    driver.get(url)
+
+    # Esperar carregar
+    time.sleep(5)
+
+    # Pegar HTML carregado
+    html = driver.page_source
+    driver.quit()
+    soup = BeautifulSoup(html, "html.parser")
+    matches_box = soup.find('div', id='matchesBox')
+    agenda = []
+    current_event = None
+    # Passa por todos os elementos dos jogos, e salvam eles na string agenda
+    for element in matches_box.find_all(['thead', 'tbody']):
+        if element.name == 'thead':
+            event_link = element.find('a')
+            if event_link:
+                current_event = event_link.text.strip()
+        elif element.name == 'tbody':
+            rows = element.find_all('tr', class_='team-row')
+            for row in rows:
+                date_cell = row.find('td', class_='date-cell')
+                date_text = date_cell.text.strip() if date_cell else "Data desconhecida"
+                teams = row.find_all('a', class_='team-name')
+                team1 = teams[0].text.strip() if len(teams) > 0 else "Time 1 desconhecido"
+                team2 = teams[1].text.strip() if len(teams) > 1 else "Time 2 desconhecido"
+                score_spans = row.find('div', class_="score-cell").find_all('span', class_="score")
+                score1 = score_spans[0].text.strip() if len(score_spans) > 0 else "-"
+                score2 = score_spans[1].text.strip() if len(score_spans) > 1 else "-"
+
+                agenda.append({
+                    "evento": current_event,
+                    "data": date_text,
+                    "time1": team1,
+                    "score1": score1,
+                    "time2": team2,
+                    "score2": score2
+                })
+    return agenda
+
+def formatar_ultimos_resultados(jogos):
+
+    # Filtra os resultados passados (com data anterior a hoje)
+    resultados_passados = []
+    hoje = datetime.now()
+    for jogo in jogos:
+        try:
+            data_jogo = datetime.strptime(jogo['data'], "%d/%m/%Y")
+            if data_jogo < hoje:
+                resultados_passados.append((data_jogo, jogo))
+        except ValueError:
+            continue  # Ignora jogos com datas inválidas
+
+    if not resultados_passados:
+        return "Não encontrei resultados passados da FURIA. 😢"
+
+    # Ordena pela data e pega os 5 mais recentes
+    resultados_passados.sort(key=lambda x: x[0], reverse=True)
+    ultimos_resultados = resultados_passados[:5]
+
+    # Formata a mensagem com <br> para o chat
+    resposta = "📅 <strong>Últimos 5 resultados da FURIA:</strong><br>"
+    for jogo_data, jogo in ultimos_resultados:
+        resposta += f"🏆 {jogo['evento']}<br>"
+        resposta += f"📆 {jogo['data']}<br>"
+        resposta += f"🔫 {jogo['time1']} {jogo['score1']} vs {jogo['score2']} {jogo['time2']}<br><br>"
+
+    return resposta
+
+def formatar_agenda_proximo(jogos):
+
+    # Tenta converter a data de cada jogo e filtra os futuros
+    jogos_futuros = []
+    hoje = datetime.now()
+
+    for jogo in jogos:
+        try:
+            data_jogo = datetime.strptime(jogo['data'], "%d/%m/%Y")
+            if data_jogo >= hoje:
+                jogos_futuros.append((data_jogo, jogo))
+        except ValueError:
+            continue  # Se falhar ao converter a data, ignora
+
+    if not jogos_futuros:
+        return "Não encontrei nenhum jogo futuro da FURIA no momento. 😢"
+
+    # Ordena pela data e pega o próximo
+    jogos_futuros.sort(key=lambda x: x[0])
+    _, proximo = jogos_futuros[0]
+
+    # Formata a mensagem com <br> para o chat
+    resposta = "📅 <strong>Próximo jogo da FURIA:</strong><br>"
+    resposta += f"🏆 {proximo['evento']}<br>"
+    resposta += f"📆 {proximo['data']}<br>"
+    resposta += f"🔫 {proximo['time1']} {proximo['score1']} vs {proximo['score2']} {proximo['time2']}<br>"
+
+    return resposta
 
 # Função para remover acentos
 def remover_acentos(texto):
@@ -11,6 +129,7 @@ def remover_acentos(texto):
 
 # Lógica do bot em Python (com respostas predefinidas)
 def bot_response(user_message):
+
     # Respostas possíveis para diferentes cumprimentos
     greetings = ["ola", "oi", "eae", "opa"]
     gratidões = ["valeu", "vlw", "obrigado", "obg"]
@@ -36,6 +155,7 @@ def bot_response(user_message):
         """O apelido "Professor" do FalleN surgiu quando ele começou a dar aulas de Counter-Strike, e posteriormente, da sua academia de 
         treinamento FalleN Academy, e se tornou viral quando o streamer Gaules começou a usar o apelido em suas transmissões. Presente professor!"""
     ]
+
     # Remover acentos da mensagem do usuário para comparações sem acento
     message = remover_acentos(user_message.lower())
     if "fallen" in message and message.strip() != "fallen":
@@ -64,14 +184,27 @@ def bot_response(user_message):
         return """Você quer saber curiosidades? Se sim, digite apenas "curiosidades"."""
     if "uniforme" in message and message.strip() != "uniforme":
         return """Você quer saber sobre a linha de moda da FURIA? Se sim, digite apenas "uniforme"."""
+    if "resultado" in message and message.strip() != "resultados":
+        return """Você quer saber os resultados anteriores da FURIA? Se sim, digite apenas "resultados"."""
+    if "proximo" in message and message.strip() != "proximos jogos":
+        return """Você quer saber quais serão os próximos jogos da FURIA? Se sim, digite apenas "proximos jogos"."""
+    if message.strip() == "proximos jogos":
+        jogos = scraping_agenda()
+        resposta = formatar_agenda_proximo(jogos)
+        return resposta
+    if message.strip() == "resultados":
+        jogos = scraping_agenda()
+        resposta = formatar_ultimos_resultados(jogos)
+        return resposta
+    
     # Resposta para cumprimentos
     if any(greeting in message for greeting in greetings):
         return "Eae furioso! Bem-vindo ao ChatFURIOSO CS, feito para os fãs da FURIA no CS2, aproveite! GLHF😎"
     if any(gratidõe in message for gratidõe in gratidões):
         return "Não tem de que! Pode contar sempre com a gente!😎"
+    
     # Respostas gerais
     responses = {
-        "proximo jogo": """O time da FURIA entrará em ação no campeonato PGL Astana 2025 que começará no dia 10 de maio!""",
         "saiba mais players": """Quer saber mais dos nossos jogadores? Só escrever o nome do player (masculino ou feminino) que eu vou contar uns fatos daoras 
         sobre eles pra você! 😎""",
         "fallen": """O FalleN, ou carinhosamente chamado de Professor, é um dos maiores nomes do Counter-Strike mundial, bicampeão de Majors e referência no 
@@ -118,7 +251,7 @@ def bot_response(user_message):
         [flag_ag] lulitenz - Lucia Dubra""",
         "uniforme": "Garanta já seu uniforme do time de CS da FURIA e se mostre um verdadeiro FURIOSO 😎 em: 'furia.gg'\nNão vai perder em?",
         "curiosidades": random.choice(curiosidades),
-        "outros jogos": """A FURIA participa de muitos outros jogos que você pode acompanhar! Dá uma olhada:
+        "outros jogos": """A FURIA participa de muitos outros jogos que você pode acompanhar! Dá uma olhada:<br>
         Valorant🎯<br>
         League of Legends🧙‍♂️<br>
         PUBG🪖<br>
@@ -131,6 +264,7 @@ def bot_response(user_message):
     }
 
     return responses.get(message, responses["default"])
+
 # Rota principal que renderiza o HTML
 @app.route('/')
 def index():
