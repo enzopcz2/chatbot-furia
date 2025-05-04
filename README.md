@@ -8,6 +8,16 @@
 
 <p align="center">Um ChatBOT para fãs de CS! Feito de fã para fã, faça bom proveito!</p>
 
+## 🧑‍💻 **Tecnologias**
+
+- HTML
+
+- CSS
+
+- Java Script
+
+- Python - Flask
+
 ## ⚙️ **Instalação**
 ### Passo 1: Clonar o repositório
 
