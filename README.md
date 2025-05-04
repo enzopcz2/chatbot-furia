@@ -9,12 +9,18 @@
 <p align="center">Um ChatBOT para fãs de CS! Feito de fã para fã, faça bom proveito!</p>
 
 ## ⚙️ **Instalação**
-O site está disponível no link: https://web-production-574b8.up.railway.app/
+### Passo 1: Clonar o repositório
 
-Caso, o link não funcione, siga o passo-a-passo abaixo:
+Clone o repositório para sua máquina local usando o Git:
 
-Para a instação, é necessário ter baixado na sua máquina a linguagem Python, veja mais em: https://www.python.org/
-Dentro da pasta onde está o requirements.txt, use o comando no terminal:
+```bash
+git clone https://github.com/enzopcz2/chatbot-furia.git
+cd chatbot-furia
+```
+
+### Passo 2: Instalar dependências
+
+Instale as dependências do projeto usando o pip:
 
 ```bash
 pip install -r requirements.txt
@@ -26,7 +32,7 @@ Após isso, escreva o seguinte comando para rodar o site:
 python app.py
 ```
 
-E pronto, o site abrirá no seu navegador.
+E pronto, o site estará disponível em: http://local_host:5000/.
 ## 🧠 **Utilidade**
 Este projeto tem como objetivo fornecer uma experiência interativa para os fãs da FURIA no cenário de Counter-Strike 2. Através de um chatbot integrado com Flask, o usuário pode:
 
