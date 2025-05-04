@@ -45,7 +45,9 @@
           <button onclick="setSuggestedMessage('saiba mais players')">Players</button>
           <button onclick="setSuggestedMessage('proximo jogo')">Próximo Jogo</button>
           <button onclick="setSuggestedMessage('uniforme')">Uniforme</button>
-          <button onclick="setSuggestedMessage('outros jogos')">Outros Jogos</button>
+          <button onclick="setSuggestedMessage('outros jogos')">Mais Sobre A FURIA</button>
+          <button onclick="setSuggestedMessage('proximos jogos')">Próximos Jogos</button>
+          <button onclick="setSuggestedMessage('resultados')">Resultados Jogos</button>
         </div>
       </div>
     
@@ -66,7 +68,7 @@
     function startChat() {
       document.getElementById("startScreen").style.display = "none";
       document.getElementById("chatbox").style.display = "flex";
-      appendMessage("Eae furioso! Bem-vindo ao ChatFURIOSO CS, feito para os fãs da FURIA no CS2, aproveite! GLHF😎", "bot");
+      appendMessage("Eae furioso! Bem-vindo ao ChatFURIOSO CS, feito para os fãs da FURIA no CS2, aproveite! <br>Lembrete: Algumas respostas podem demorar mais que as outras, seja paciente! GLHF😎", "bot");
     }
 
     // Enviar mensagem
@@ -155,20 +157,6 @@
     function setSuggestedMessage(text) {
       document.getElementById("userInput").value = text;
       sendMessage();
-    }
-
-    function carregarPartidas() {
-      fetch('/api/next-matches')
-        .then(res => res.json())
-        .then(matches => {
-          const lista = document.getElementById('lista-jogos');
-          lista.innerHTML = '';
-          matches.forEach(match => {
-            const item = document.createElement('li');
-            item.textContent = `${match.team1} vs ${match.team2} - ${match.time} (${match.event})`;
-            lista.appendChild(item);
-          });
-      });
     }
 
   </script>
